@@ -1,8 +1,11 @@
 // backend.js
 import express from "express"; //Is an ES module
+import cors from "cors";
+
 const app = express();
 const port = 8000;
 
+app.use(cors()); //different ports, different origins
 app.use(express.json());
 
 app.listen(port, () => {
@@ -66,7 +69,7 @@ app.get("/users", (req, res) => {
 
     res.send(name_result);
   } else {
-    res.send();
+    res.send(users);
   }
 }); 
 
