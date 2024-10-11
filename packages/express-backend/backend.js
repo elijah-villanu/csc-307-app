@@ -14,6 +14,9 @@ app.listen(port, () => {
   );
 });
 
+
+const alpha = "ABCDEFGHIJKLMNOPabcdefghijklmnop";
+
 const users = {
     users_list: [
       {
@@ -90,14 +93,28 @@ app.get("/users/:id", (req, res) => {
 
 //Add user to list (No persistance)
 //POST HTTP Request that checks input 
+
+const random_alpha = () => {
+  let letters = "";
+  for (let i = 0; i < 3; i++){
+    letters = letters.concat(alpha[Math.floor(Math.random() * alpha.length)]);
+  };
+  return letters;
+};
+const genID = (user) =>{
+  const random_num = Math.floor(Math.random() * (1000 - 99) + 99); //Choose random num between 100 to 999
+  const id = random_alpha().concat(random_num);
+  return id;
+};
 const addUser = (user) => {
+  user["id"] = genID(user)
   users["users_list"].push(user);
   return user;
 };
 app.post("/users", (req, res) => {
   const userToAdd = req.body;
   addUser(userToAdd);
-  res.send();
+  res.status(201).send("Content Created"); 
 });
 
 
@@ -109,8 +126,8 @@ const deleteUser = (id) => {
 };  
 app.delete("/users/:id",(req, res) => {
   const id = req.params["id"];
-  deleteUser(id)
-  res.send()
+  deleteUser(id);
+  res.send();
 });
 
 

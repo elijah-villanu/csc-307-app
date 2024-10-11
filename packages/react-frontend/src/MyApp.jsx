@@ -11,7 +11,7 @@ function MyApp() {
         return i !== index;
     });
     setCharacters(updated);
-    }  
+  }  
 
   function updateList(person) {
     postUser(person) //Contains the promise
