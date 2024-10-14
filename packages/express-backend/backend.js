@@ -1,5 +1,5 @@
 // backend.js
-import express from "express"; //Is an ES module
+import express, { json } from "express"; //Is an ES module
 import cors from "cors";
 
 const app = express();
@@ -108,26 +108,30 @@ const genID = (user) =>{
 };
 const addUser = (user) => {
   user["id"] = genID(user)
-  users["users_list"].push(user);
+  users["users_list"].push(user); //Add user to the backend list
   return user;
 };
 app.post("/users", (req, res) => {
   const userToAdd = req.body;
-  addUser(userToAdd);
-  res.status(201).send("Content Created"); 
+  addUser(userToAdd)
+  res.status(201).json(userToAdd);
 });
 
 
-const deleteUser = (id) => {
+const deleteUser = (user) => {
    //id is unique, finds first instance
-  let found = findUserById(id)
-  const index = users["users_list"].indexOf(found)
+  const index = users["users_list"].indexOf(user)
   users["users_list"].splice(index,1) //delete item from arrary
 };  
 app.delete("/users/:id",(req, res) => {
   const id = req.params["id"];
-  deleteUser(id);
-  res.send();
+  let user = findUserById(id)
+  if (user === undefined){
+    res.status(404).send("Resource not found.");
+  } else {
+    deleteUser(user);
+    res.status(204).send("No Content");
+  }
 });
 
 
