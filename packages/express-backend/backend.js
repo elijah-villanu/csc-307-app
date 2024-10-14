@@ -1,8 +1,11 @@
 // backend.js
-import express from "express"; //Is an ES module
+import express, { json } from "express"; //Is an ES module
+import cors from "cors";
+
 const app = express();
 const port = 8000;
 
+app.use(cors()); //different ports, different origins
 app.use(express.json());
 
 app.listen(port, () => {
@@ -10,6 +13,9 @@ app.listen(port, () => {
     `Example app listening at http://localhost:${port}`
   );
 });
+
+
+const alpha = "ABCDEFGHIJKLMNOPabcdefghijklmnop";
 
 const users = {
     users_list: [
@@ -66,7 +72,7 @@ app.get("/users", (req, res) => {
 
     res.send(name_result);
   } else {
-    res.send();
+    res.send(users);
   }
 }); 
 
@@ -87,27 +93,45 @@ app.get("/users/:id", (req, res) => {
 
 //Add user to list (No persistance)
 //POST HTTP Request that checks input 
+
+const random_alpha = () => {
+  let letters = "";
+  for (let i = 0; i < 3; i++){
+    letters = letters.concat(alpha[Math.floor(Math.random() * alpha.length)]);
+  };
+  return letters;
+};
+const genID = (user) =>{
+  const random_num = Math.floor(Math.random() * (1000 - 99) + 99); //Choose random num between 100 to 999
+  const id = random_alpha().concat(random_num);
+  return id;
+};
 const addUser = (user) => {
-  users["users_list"].push(user);
+  user["id"] = genID(user)
+  users["users_list"].push(user); //Add user to the backend list
   return user;
 };
 app.post("/users", (req, res) => {
   const userToAdd = req.body;
-  addUser(userToAdd);
-  res.send();
+  addUser(userToAdd)
+  res.status(201).json(userToAdd);
 });
 
 
-const deleteUser = (id) => {
+const deleteUser = (user) => {
    //id is unique, finds first instance
-  let found = findUserById(id)
-  const index = users["users_list"].indexOf(found)
+  const index = users["users_list"].indexOf(user)
   users["users_list"].splice(index,1) //delete item from arrary
 };  
 app.delete("/users/:id",(req, res) => {
   const id = req.params["id"];
-  deleteUser(id)
-  res.send()
+  let user = findUserById(id)
+  if (user === undefined){
+    res.status(404).send("Resource not found.");
+  } else {
+    deleteUser(user);
+    res.status(204).send("No Content");
+  }
 });
 
 
