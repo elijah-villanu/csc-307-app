@@ -40,6 +40,7 @@ function MyApp() {
       },
       body: JSON.stringify(person), //Serialize JSON to string to pass (Only name + job)
     })
+    
     return promise
   }
 
@@ -67,7 +68,7 @@ function MyApp() {
 
   function deleteUser(person){
     let partialLink = "http://localhost:8000/users/"
-    const personId = person["id"]
+    const personId = person["_id"]
     let uri = partialLink.concat(personId);
     const promise = fetch(uri, {
       method: "DELETE"
@@ -82,7 +83,7 @@ function MyApp() {
   useEffect(() => {
     fetchUsers()
             .then((res) => res.json()) //Is a promise to return once decoded
-            .then((json) => setCharacters(json["users_list"]))
+            .then((json) => setCharacters(json))
             .catch((error) => { console.log(error); });
   },[]); //[] argument to ensure only runs at first mount (do not touch main data once in state)
   
